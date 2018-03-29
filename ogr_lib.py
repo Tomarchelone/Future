@@ -34,7 +34,7 @@ class Ogr:
         window = self.window
         today = datetime.date.today()
 
-        print("<<<< Events on next ", window, " ", day_s(window), " >>>>", sep='')
+        print("<<<< Events for the next ", window, " ", day_s(window), " >>>>", sep='')
 
         index = -1
         for i in range(window):

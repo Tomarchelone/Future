@@ -14,6 +14,6 @@ Tested on Ubuntu 17.10.
 
 Type 'ogr help' in your terminal to see short manual.
 
-# Screenshot
+## Screenshot
 
 ![picture](screenshot.png)
