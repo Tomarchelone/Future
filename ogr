@@ -24,10 +24,20 @@ elif args[1] == 'rm':
     ogr.rm(args)
 elif args[1] == 'clear':
     ogr.clear(args)
+elif args[1] == 'window':
+    ogr.show_window()
+elif args[1] == 'set':
+    ogr.set_window(args)
+elif args[1] == 'cycle':
+    ogr.cycle(args)
+elif args[1] == 'stop':
+    ogr.stop_cycle(args)
+elif args[1] == 'show':
+    ogr.show_cycles(args)
 else:
     ogr.help()
 
 
-data_string = json.dumps(data)
+data_string = json.dumps(ogr.data())
 data_file = open(current_dir + '/data.json', 'w')
 data_file.write(data_string)
