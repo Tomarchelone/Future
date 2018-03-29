@@ -229,29 +229,39 @@ class Ogr:
 
 
     def help(self):
-        print("No such command.")
         print("Possible commands:\n")
+        print("All commands should start with 'ogr'\n")
 
-        print("-[]\n")
+        print("-[] : empty command (typed as 'ogr') - view list of events \n")
 
-        print("-[open <yyyy-mm-dd>]")
+        print("-[open <yyyy-mm-dd>] : open date for listing")
         print("-[open today]")
         print("-[open tomorrow]")
         print("-[open <day of the week>]")
         print("-[open next <day of the week>]")
-        print("-[open +<number of days>]\n")
+        print("-[open +<number of days>] : open +1 means  open tomorrow\n")
 
-        print("-[close <index>]")
-        print("-[clear <index>]")
-        print("-[add to <index>]")
-        print("-[rm <index> from <index>]\n")
+        print("All dates have indexes in their right corner\n")
 
-        print("-[cycle year <mm-dd>]")
-        print("-[cycle month <day of the month>]")
-        print("-[cycle week <day of the week>]")
-        print("-[cycle every <number of days> days, start <yyyy-mm-dd>]")
-        print("-[stop cycle <cycle index>]")
+        print("-[close <index>] : close date with index <index>")
+        print("-[clear <index>] : clear all events from date")
+        print("-[add to <index>] : add an event to date\n")
+
+        print("Every event has it's own index at the end of them\n")
+
+        print("-[rm <index> from <index>] rm event from date\n")
+
+        print("There is a special command for cyclic events\n")
+
+        print("-[cycle year <mm-dd>] : annual cycle")
+        print("-[cycle month <day of the month>] : montly cycle")
+        print("-[cycle week <day of the week>] : weekly cycle")
+        print("-[cycle every <number of days> days, start <yyyy-mm-dd>] : cycle with specific period\n")
+
+        print("Cycles are also indexed\n")
+
         print("-[show cycles]")
+        print("-[stop cycle <cycle index>] : ")
 
 
 # [type, field1, field2, field3, field4]

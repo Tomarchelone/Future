@@ -3,7 +3,15 @@ from  ogr_lib import*
 
 args = sys.argv
 current_dir = args[0][:-4]
-data_file = open(current_dir + '/data.json')
+try:
+    data_file = open(current_dir + '/data.json')
+except:
+    print("Welcome to Ogr!\n\nTry typing 'open tomorrow'"
+    , " then 'add to 0' and then type some event.\n"
+    , "Type 'ogr help' to see help message.\n", sep='')
+    data_file = open(current_dir + '/data.json', 'w')
+    data_file.write('{"dates": [], "events": {}, "weekdays": {}, "cycles": [], "window": 30}')
+    exit(0)
 data_string = data_file.read();
 data_file.close()
 data = json.loads(data_string)
@@ -34,6 +42,8 @@ elif args[1] == 'stop':
     ogr.stop_cycle(args)
 elif args[1] == 'show':
     ogr.show_cycles(args)
+elif args[1] == 'help':
+    ogr.help()
 else:
     ogr.help()
 
