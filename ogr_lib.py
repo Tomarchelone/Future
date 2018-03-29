@@ -145,20 +145,20 @@ class Ogr:
         if len(args) < 4 or args[3] != "from":
             print('Use "rm <index> from <index>" instead.')
             return()
-        if ok and len(dates) <= int(args[4]):
+        if len(self.dates) <= int(args[4]):
             print("index out of range")
             return()
-        if ok and len(events[dates[int(args[4])]]) <= int(args[2]):
+        if len(self.events[self.dates[int(args[4])]]) <= int(args[2]):
             print("index out of range")
             return()
 
-        events[dates[int(args[4])]].pop(int(args[2]))
+        self.events[self.dates[int(args[4])]].pop(int(args[2]))
         self.show()
 
-    def clear(argv):
-        if int(args[2]) < len(dates):
-            events[dates[int(args[2])]] = []
-            show(data)
+    def clear(self, args):
+        if int(args[2]) < len(self.dates):
+            self.events[self.dates[int(args[2])]] = []
+            self.show()
         else:
             print("no such index")
 
@@ -243,13 +243,20 @@ class Ogr:
 
         print("All dates have indexes in their right corner\n")
 
-        print("-[close <index>] : close date with index <index>")
+        print("-[close <index>] : close date with index <index>;"
+        , "it will disappear from list")
         print("-[clear <index>] : clear all events from date")
         print("-[add to <index>] : add an event to date\n")
 
         print("Every event has it's own index at the end of them\n")
 
         print("-[rm <index> from <index>] rm event from date\n")
+
+        print("There is a variable 'window' that represents maximun distance"
+        , "that listed dates can have from today. Other dates will not be"
+        , "shown until they are close enough\n")
+
+        print("-[set window] : sets window size\n")
 
         print("There is a special command for cyclic events\n")
 
@@ -260,8 +267,8 @@ class Ogr:
 
         print("Cycles are also indexed\n")
 
-        print("-[show cycles]")
-        print("-[stop cycle <cycle index>] : ")
+        print("-[show cycles] : shows all cycles")
+        print("-[stop cycle <cycle index>] : removes cycle")
 
 
 # [type, field1, field2, field3, field4]

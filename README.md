@@ -13,3 +13,7 @@ Tested on Ubuntu 17.10.
 ## Usage
 
 Type 'ogr help' in your terminal to see short manual.
+
+# Screenshot
+
+![picture](screenshot.png)
