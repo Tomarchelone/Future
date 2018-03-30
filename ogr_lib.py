@@ -103,12 +103,13 @@ class Ogr:
                 print("Incorrect date format\nUse yyyy-mm-dd format")
                 return()
 
-
         for d in range(len(dates)):
             if dates[d] == date:
                 print("Date already exists with index", d)
                 return()
 
+        _date = list(args[2].split('-'))
+        date = _date[0] + "-" + norm(_date[1]) + "-" + norm(_date[2])
         dates.append(date)
         dates.sort()
         events[date] = []
