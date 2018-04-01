@@ -34,7 +34,7 @@ class Ogr:
         window = self.window
         today = datetime.date.today()
 
-        print("<<<< Events for the next ", window, " ", day_s(window), " >>>>", sep='')
+        print("|--Events for the next ", window, " ", day_s(window), "-->>", sep='')
 
         index = -1
         for i in range(window):
@@ -45,22 +45,23 @@ class Ogr:
 
             if flat_date in self.events:
                 index += 1
-                print("____________________________________")
-                print(flat_date, " (", weekdays[flat_date], " : ", i, " ", day_s(i)
+                print("|____________________________________")
+                print("|", flat_date, "| (", weekdays[flat_date], " : ", i, " ", day_s(i)
                       , ")\t[", index, "]", sep='', end=":\n")
                 taken = True
                 if (len(events[flat_date]) != 0):
                     for j in range(len(events[flat_date])):
-                        print(" -", events[flat_date][j], " [", j, "]", sep='')
+                        print("|__", events[flat_date][j], " [", j, "]", sep='')
 
             for c_index in range(len(self.cycles)):
                 cycle = self.cycles[c_index]
                 if (cycle.falls(date)):
                     if not taken:
-                        print("____________________________________")
-                        print(flat_date, " (", ind_to_day[date.weekday()], " : "
+                        taken = True
+                        print("|____________________________________")
+                        print("|", flat_date, "| (", ind_to_day[date.weekday()], " : "
                         , i, " ", day_s(i), ")\t[C]", sep='', end=":\n")
-                    print(" -", cycle.text, _type(cycle), "[", c_index, "]", sep='')
+                    print("|__", cycle.text, _type(cycle), "[", c_index, "]", sep='')
 
 
     def open(self, args):
@@ -72,6 +73,7 @@ class Ogr:
             return()
 
         date = args[2]
+        # Normalize date
         if date == 'today' or date == 'Today':
             date = datetime.date.today().strftime("%Y-%m-%d")
         elif date == 'tomorrow' or date == 'Tomorrow':
@@ -108,7 +110,7 @@ class Ogr:
                 print("Date already exists with index", d)
                 return()
 
-        _date = list(args[2].split('-'))
+        _date = list(date.split('-'))
         date = _date[0] + "-" + norm(_date[1]) + "-" + norm(_date[2])
         dates.append(date)
         dates.sort()
@@ -173,6 +175,9 @@ class Ogr:
         elif args[2] == "week":
             self.cycles.append(Cycle([2, args[3], -1, -1, -1, input()]))
         elif args[2] == "every":
+            if (args[3] == "day"):
+                self.cycles.append(Cycle([4, -1, -1, -1, -1, input()]))
+                return()
             if (args[3] != "days," or args[4] != "start"):
                 print("Use 'cycle every <number of days> days, start <yyyy-mm-dd>' instead.")
                 return()
@@ -180,6 +185,10 @@ class Ogr:
             diff = int(args[3])
             yy, mm, dd = (int(x) for x in args[7].split('-'))
             self.cycles.append(Cycle([3, yy, mm, dd, diff, input()]))
+
+        else:
+            print("Incorrect cycle command")
+            return()
 
         # self.show()
 
@@ -265,6 +274,8 @@ class Ogr:
         print("-[cycle month <day of the month>] : montly cycle")
         print("-[cycle week <day of the week>] : weekly cycle")
         print("-[cycle every <number of days> days, start <yyyy-mm-dd>] : cycle with specific period\n")
+        print("-[cycle every day] : daily events\n")
+
 
         print("Cycles are also indexed\n")
 
@@ -301,9 +312,14 @@ class Cycle:
             return(self.field1 == date.day)
         elif self.type == 2: # week
             return(weekDays[self.field1] == date.weekday())
-        else:
+        elif self.type == 3: # manual
             ancor = datetime.date(self.field1, self.field2, self.field3)
             return((date - ancor).days % self.field4 == 0)
+        elif self.type == 4: # every day
+            return(True)
+        else:
+            raise Error("Falls invalid cycle type")
+
 
 def get_last(cycle):
     return(cycle[-1])
