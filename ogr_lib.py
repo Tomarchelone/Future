@@ -12,13 +12,6 @@ ind_to_month = {1: 'Yanuary', 2: 'February', 3: 'March', 4: 'April', 5: 'May'
                 , 6: 'June', 7: "July", 8: "August", 9: "September"
                 , 10: "October", 11: "November", 12: "December"}
 
-
-def day_s(diff):
-    if diff == 1:
-        return("day")
-    else:
-        return("days")
-
 class Ogr:
     def __init__(self, data):
         self.window = data["window"]
@@ -34,15 +27,42 @@ class Ogr:
         window = self.window
         today = datetime.date.today()
 
-        print("|--Events for the next ", window, " ", day_s(window), "-->>", sep='')
+        self.clean()
 
         index = -1
         for i in range(window):
             date = today + datetime.timedelta(days=i)
             flat_date = flatten(date)
 
-            taken = False
+            if i == 0:
+                present = False
+                if flat_date in self.events and self.events[flat_date]:
+                    present = True
+                else:
+                    for c_index in range(len(self.cycles)):
+                        cycle = self.cycles[c_index]
+                        if (cycle.falls(date)):
+                            present = True
+                            break
+                if present == False:
+                    print("|--Events for the next ", window, " ", day_s(window), "-->>", sep='')
+                    continue
+                print("|~~~~~~~~~~~~~~TODAY~~~~~~~~~~~~[0]~~")
+                if flat_date in self.events:
+                    index += 1
+                    if (self.events[flat_date]):
+                        for j in range(len(events[flat_date])):
+                            print("|--", events[flat_date][j], " [", j, "]", sep='')
+                for c_index in range(len(self.cycles)):
+                    cycle = self.cycles[c_index]
+                    if (cycle.falls(date)):
+                        print("|--", cycle.text, _type(cycle), "[", c_index, "]", sep='')
 
+                print("|~~~~~~~~~~~NEXT-", window, "-", Day_s(window), "~~~~~~~~~~~~~", curve(window), sep='')
+                continue
+
+
+            taken = False
             if flat_date in self.events:
                 index += 1
                 print("|____________________________________")
@@ -51,7 +71,7 @@ class Ogr:
                 taken = True
                 if (len(events[flat_date]) != 0):
                     for j in range(len(events[flat_date])):
-                        print("|__", events[flat_date][j], " [", j, "]", sep='')
+                        print("|--", events[flat_date][j], " [", j, "]", sep='')
 
             for c_index in range(len(self.cycles)):
                 cycle = self.cycles[c_index]
@@ -61,18 +81,14 @@ class Ogr:
                         print("|____________________________________")
                         print("|", flat_date, "| (", ind_to_day[date.weekday()], " : "
                         , i, " ", day_s(i), ")\t[C]", sep='', end=":\n")
-                    print("|__", cycle.text, _type(cycle), "[", c_index, "]", sep='')
+                    print("|--", cycle.text, _type(cycle), "[", c_index, "]", sep='')
 
 
-    def open(self, args):
+    def open(self, date):
         dates = self.dates
         events = self.events
         weekdays = self.weekdays
-        if len(args) < 3:
-            print("No arguments");
-            return()
 
-        date = args[2]
         # Normalize date
         if date == 'today' or date == 'Today':
             date = datetime.date.today().strftime("%Y-%m-%d")
@@ -100,7 +116,7 @@ class Ogr:
                 date += datetime.timedelta(days=7)
                 date = date.strftime("%Y-%m-%d")
         else:
-            test = list(args[2].split('-'))
+            test = list(date.split('-'))
             if len(test) != 3 or len(test[0]) != 4:
                 print("Incorrect date format\nUse yyyy-mm-dd format")
                 return()
@@ -112,6 +128,9 @@ class Ogr:
 
         _date = list(date.split('-'))
         date = _date[0] + "-" + norm(_date[1]) + "-" + norm(_date[2])
+        if flatten(datetime.date.today()) > date:
+            print("Date already passed")
+            return()
         dates.append(date)
         dates.sort()
         events[date] = []
@@ -120,15 +139,14 @@ class Ogr:
         weekdays[date] = ind_to_day[_date.weekday()]
         self.show()
 
-    def close(self, args):
+    def close(self, index):
         dates = self.dates
         events = self.events
         weekdays = self.weekdays
-        if int(args[2]) < len(dates):
-            events.pop(dates[int(args[2])])
-            weekdays.pop(dates[int(args[2])])
-            dates.pop(int(args[2]))
-            self.show()
+        if index < len(dates):
+            events.pop(dates[index])
+            weekdays.pop(dates[index])
+            dates.pop(index)
         else:
             print("no such index")
 
@@ -178,12 +196,12 @@ class Ogr:
             if (args[3] == "day"):
                 self.cycles.append(Cycle([4, -1, -1, -1, -1, input()]))
                 return()
-            if (args[3] != "days," or args[4] != "start"):
+            if (args[4] != "days," or args[5] != "start"):
                 print("Use 'cycle every <number of days> days, start <yyyy-mm-dd>' instead.")
                 return()
 
             diff = int(args[3])
-            yy, mm, dd = (int(x) for x in args[7].split('-'))
+            yy, mm, dd = (int(x) for x in args[6].split('-'))
             self.cycles.append(Cycle([3, yy, mm, dd, diff, input()]))
 
         else:
@@ -214,6 +232,8 @@ class Ogr:
             elif (self.cycles[i].type == 2):
                 print(", ", self.cycles[i].field1
                 , " of each week", sep='')
+            elif (self.cycles[i].type == 4):
+                print(", every day", sep='')
             else:
                 print(", every",  self.cycles[i].field4
                 , " days", sep='')
@@ -226,6 +246,17 @@ class Ogr:
             self.window = int(input())
         else:
             print('No such command. To set window use "set window"')
+
+    def clean(self):
+        flat_today = flatten(datetime.date.today())
+        old_date_count = 0
+        for date in self.dates:
+            if date < flat_today:
+                old_date_count += 1
+            else:
+                break
+        for i in range(old_date_count):
+            self.close(0)
 
     def data(self):
         data = {}
@@ -249,9 +280,11 @@ class Ogr:
         print("-[open tomorrow]")
         print("-[open <day of the week>]")
         print("-[open next <day of the week>]")
-        print("-[open +<number of days>] : open +1 means  open tomorrow\n")
+        print("-[open +<number of dadailyys>] : open +1 means open tomorrow\n")
 
-        print("All dates have indexes in their right corner\n")
+        print("All dates have indexes in their right corner")
+        print("TODAY has index 0\n")
+
 
         print("-[close <index>] : close date with index <index>;"
         , "it will disappear from list")
@@ -276,16 +309,19 @@ class Ogr:
         print("-[cycle every <number of days> days, start <yyyy-mm-dd>] : cycle with specific period\n")
         print("-[cycle every day] : daily events\n")
 
+        print("Note: [cycle every day] events will only appear in TODAY section")
+        print("and will not be seen in other days. If you want them to be seen in")
+        print("every day, use [cycle every <number of days> days, start <yyyy-mm-dd>]\n")
 
         print("Cycles are also indexed\n")
 
-        print("-[show cycles] : shows all cycles")
-        print("-[stop cycle <cycle index>] : removes cycle")
+        print("-[show cycles] : show all cycles")
+        print("-[stop <cycle index>] : remove cycle")
 
 
 # [type, field1, field2, field3, field4]
-# types: annual, monthly, weekly, manual diff
-#        0       1        2       3
+# types: annual, monthly, weekly, manual diff, daily
+#        0       1        2       3            4
 class Cycle:
     def __init__(self, data):
         self.type = data[0]
@@ -316,7 +352,10 @@ class Cycle:
             ancor = datetime.date(self.field1, self.field2, self.field3)
             return((date - ancor).days % self.field4 == 0)
         elif self.type == 4: # every day
-            return(True)
+            if (date == datetime.date.today()):
+                return(True)
+            else:
+                return(False)
         else:
             raise Error("Falls invalid cycle type")
 
@@ -331,11 +370,25 @@ def _type(cycle):
         return(" [monthly]")
     elif cycle.type == 2:
         return(" [weekly]")
+    elif cycle.type == 4:
+        return(" [every day]")
     else:
-        if cycle.field1 == 1:
+        if cycle.field4 == 1:
             return(" [every day]")
         else:
             return(" [every " + str(cycle.field4) + " days]")
+
+def day_s(diff):
+    if diff == 1:
+        return("day")
+    else:
+        return("days")
+
+def Day_s(diff):
+    if diff == 1:
+        return("DAY")
+    else:
+        return("DAYS")
 
 def ending(day):
     if day == 1 or day == 21 or day == 31:
@@ -355,3 +408,15 @@ def norm(a):
         return '0' + a
     else:
         return a
+
+def dash(window):
+    if window < 10:
+        return("-")
+    else:
+        return("")
+
+def curve(window):
+    if window < 10:
+        return("~")
+    else:
+        return("")

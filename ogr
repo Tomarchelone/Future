@@ -23,9 +23,12 @@ if (len(args) == 1):
 elif (args[1] == "date"):
     print(datetime.date.today())
 elif args[1] == 'open':
-    ogr.open(args)
+    if len(args) < 3:
+        print("No arguments");
+    else:
+        ogr.open(args[2])
 elif args[1] == 'close':
-    ogr.close(args)
+    ogr.close(int(args[2]))
 elif args[1] == 'add':
     ogr.add(args)
 elif args[1] == 'rm':
