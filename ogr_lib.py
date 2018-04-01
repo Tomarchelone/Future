@@ -45,7 +45,7 @@ class Ogr:
                             present = True
                             break
                 if present == False:
-                    print("|--Events for the next ", window, " ", day_s(window), "-->>", sep='')
+                    print("|~~~~~~~~~~~NEXT-", window, "-", Day_s(window), "~~~~~~~~~~~~~", curve(window), sep='')
                     continue
                 print("|~~~~~~~~~~~~~~TODAY~~~~~~~~~~~~[0]~~")
                 if flat_date in self.events:
