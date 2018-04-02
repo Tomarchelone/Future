@@ -36,8 +36,10 @@ class Ogr:
 
             if i == 0:
                 present = False
+                zero = False
                 if flat_date in self.events and self.events[flat_date]:
                     present = True
+                    zero = True
                 else:
                     for c_index in range(len(self.cycles)):
                         cycle = self.cycles[c_index]
@@ -47,7 +49,7 @@ class Ogr:
                 if present == False:
                     print("|~~~~~~~~~~~NEXT-", window, "-", Day_s(window), "~~~~~~~~~~~~~", curve(window), sep='')
                     continue
-                print("|~~~~~~~~~~~~~~TODAY~~~~~~~~~~~~[0]~~")
+                print("|~~~~~~~~~~~~~~TODAY~~~~~~~~~~~~", z_or_c(zero), "~~", sep='')
                 if flat_date in self.events:
                     index += 1
                     if (self.events[flat_date]):
@@ -283,7 +285,9 @@ class Ogr:
         print("-[open +<number of dadailyys>] : open +1 means open tomorrow\n")
 
         print("All dates have indexes in their right corner")
-        print("TODAY has index 0\n")
+        print("TODAY has index 0 if it is 'opened' i.e. has non-cyclic events")
+        print("If TODAY has only cyclic events, it is marked as 'C'\n")
+
 
 
         print("-[close <index>] : close date with index <index>;"
@@ -408,6 +412,12 @@ def norm(a):
         return '0' + a
     else:
         return a
+
+def z_or_c(zero):
+    if zero:
+        return("[0]")
+    else:
+        return("[C]")
 
 def dash(window):
     if window < 10:
