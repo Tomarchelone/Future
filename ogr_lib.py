@@ -86,7 +86,8 @@ class Ogr:
                     print("|--", cycle.text, _type(cycle), "[", c_index, "]", sep='')
 
 
-    def open(self, date):
+    def open(self, args):
+        date = args[2];
         dates = self.dates
         events = self.events
         weekdays = self.weekdays
@@ -287,7 +288,6 @@ class Ogr:
         print("All dates have indexes in their right corner")
         print("TODAY has index 0 if it is 'opened' i.e. has non-cyclic events")
         print("If TODAY has only cyclic events, it is marked as 'C'\n")
-
 
 
         print("-[close <index>] : close date with index <index>;"

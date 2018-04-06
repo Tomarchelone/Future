@@ -26,7 +26,7 @@ elif args[1] == 'open':
     if len(args) < 3:
         print("No arguments");
     else:
-        ogr.open(args[2])
+        ogr.open(args)
 elif args[1] == 'close':
     ogr.close(int(args[2]))
 elif args[1] == 'add':
