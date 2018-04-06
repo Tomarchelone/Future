@@ -140,7 +140,7 @@ class Ogr:
         year, month, day = (int(x) for x in date.split('-'))
         _date = datetime.date(year, month, day)
         weekdays[date] = ind_to_day[_date.weekday()]
-        self.show()
+        print("Date opened with index", dates.index(date))
 
     def close(self, index):
         dates = self.dates
@@ -150,6 +150,7 @@ class Ogr:
             events.pop(dates[index])
             weekdays.pop(dates[index])
             dates.pop(index)
+            print("Closed")
         else:
             print("no such index")
 
@@ -163,7 +164,7 @@ class Ogr:
         index = int(args[3])
         text = input()
         events[dates[index]].append(text)
-        self.show()
+        print("Added to date", dates[index], "with index of event", events[dates[index]].index(text))
 
     def rm(self, args):
         if len(args) < 4 or args[3] != "from":
@@ -177,12 +178,12 @@ class Ogr:
             return()
 
         self.events[self.dates[int(args[4])]].pop(int(args[2]))
-        self.show()
+        print("Removed")
 
     def clear(self, args):
         if int(args[2]) < len(self.dates):
             self.events[self.dates[int(args[2])]] = []
-            self.show()
+            print("Cleared")
         else:
             print("no such index")
 
@@ -198,6 +199,7 @@ class Ogr:
         elif args[2] == "every":
             if (args[3] == "day"):
                 self.cycles.append(Cycle([4, -1, -1, -1, -1, input()]))
+                print("Cycle started")
                 return()
             if (args[4] != "days," or args[5] != "start"):
                 print("Use 'cycle every <number of days> days, start <yyyy-mm-dd>' instead.")
@@ -205,16 +207,18 @@ class Ogr:
 
             diff = int(args[3])
             yy, mm, dd = (int(x) for x in args[6].split('-'))
-            self.cycles.append(Cycle([3, yy, mm, dd, diff, input()]))
+            this_cycle = Cycle([3, yy, mm, dd, diff, input()])
+            self.cycles.append(this_cycle)
 
         else:
             print("Incorrect cycle command")
             return()
 
-        # self.show()
+        print("Cycle started")
 
     def stop_cycle(self, args):
         self.cycles.pop(int(args[2]))
+        print("Cycle stopped")
 
     def show_cycles(self, args):
         if args[2] != "cycles":
@@ -247,6 +251,7 @@ class Ogr:
     def set_window(self, args):
         if (args[2] == 'window'):
             self.window = int(input())
+            print("Window set")
         else:
             print('No such command. To set window use "set window"')
 
