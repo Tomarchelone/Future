@@ -1,18 +1,18 @@
-# Ogr
+# Future
 
 Terminal organizer.
 
 ## Installation
 
-Download "ogr" and "ogr_lib.py" to convenient directory. Add line
-"export PATH=$PATH:path" to the end of your ".bashrc" file in your home directory, where
-path is the path to the "ogr" file. Reboot. Now you should be able to start
-by typing "ogr" in your terminal.
-Tested on Ubuntu 17.10.
+Download contents to convenient directory. Add line
+"export PATH=$PATH:<path>" to the end of your ".bashrc" file in your home directory, where
+<path> is the path to the "future" file. Reboot. Now you should be able to start
+by typing "future" in your terminal.
+Tested on Ubuntu 18.04.
 
 ## Usage
 
-Type 'ogr help' in your terminal to see short manual.
+Type 'future help' in your terminal to see short manual.
 
 ## Screenshot
 
