@@ -49,6 +49,11 @@ class Future:
 
                     self.print_cycle(cycle, j, base_len)
 
+        #if header_printed:
+        #    print("┣" + "━" * (base_len - 2) + "┫")
+
+        self.print_foot(base_len)
+
     def add(self, args):
         events = self.events
 
@@ -191,27 +196,63 @@ class Future:
         print("Window size is", self.window, "days")
 
     def print_future(self):
-        main_header = ("|~~~~~~[Future for the next "
+        main_header = ("┏━━━━━━━━┫Future for the next "
                        + str(self.window)
                        + " "
                        + day_s(self.window)
-                       + "]~~~~~~|")
+                       + "┣━━━━━━━━┓")
 
+        base_len = len(main_header)
+        # Это вычисление длины и положения крыши
+        days_len = len(str(self.window)) + len(day_s(self.window))
+        roof = "         ┏" + "━" * (21 + days_len) + "┓"
+        bottom = "┃        ┗" + "━" * (21 + days_len) + "┛"
+        bottom += " " * (base_len - 1 - len(bottom)) + "┃"
+
+        print(roof)
         print(main_header)
+        print(bottom)
 
-        return(len(main_header))
+        return(base_len)
 
     def print_header(self, i, date, base_len):
-        print("|" + "_" * (base_len - 2) + "|")
-        main_string = ("|["
-                       + datetime.strftime(date, "%Y-%m-%d")
-                       + "] ~ ["
-                       + ind_to_day[date.weekday()]
-                       + " : "
-                       + today_or_future(i)
-                       + "]")
-        main_string += " " * (base_len - len(main_string) - 1) + "|"
+        date_str = datetime.strftime(date, "%Y-%m-%d")
+        days_str = today_or_future(i)
+        main_info = (date_str
+                     + " │ "
+                     + ind_to_day[date.weekday()]
+                     + " │ "
+                     + days_str
+                     + " │")
+
+        roof = ("┣"
+                + "━" * (len(date_str) + 2)
+                + "┯"
+                + "━" * 5
+                + "┯"
+                + "━" * (len(days_str) + 2)
+                + "┯"
+                + "━" * (base_len - len(date_str) - len(days_str) - 14)
+                + "┫")
+
+        main_string = ("┃"
+                       + " "
+                       + main_info
+                       + " " * (base_len - len(main_info) - 3)
+                       + "┃")
+
+        foot = ("┠"
+                + "─" * (len(date_str) + 2)
+                + "┴"
+                + "─" * 5
+                + "┴"
+                + "─" * (len(days_str) + 2)
+                + "┘")
+        foot += " " * (base_len - len(foot) - 1) + "┃"
+
+        print(roof)
         print(main_string)
+        print(foot)
 
     def print_event(self, event, i, base_len):
         formatted_event = event + " [" + str(i) + "]"
@@ -230,24 +271,23 @@ class Future:
             if (len(current_line) + len(word) < base_len - 4):
                 current_line += word + " "
             else:
-                print(
-                    "|"
-                    + dash_or_space(dash)
+                print(dash_or_space(dash)
                     + current_line
                     + " " * (base_len - len(current_line) - 4)
-                    + "|"
+                    + "┃"
                 )
                 current_line = word + " "
                 dash = False
 
         if current_line:
-            print(
-                "|"
-                + dash_or_space(dash)
+            print(dash_or_space(dash)
                 + current_line
                 + " " * (base_len - len(current_line) - 4)
-                + "|"
+                + "┃"
             )
+
+    def print_foot(self, base_len):
+        print("┗" + "━" * (base_len - 2) + "┛" + "\n")
 
     def data(self):
         data = {}
@@ -296,7 +336,6 @@ class Future:
         print("-[show cycles] : show all cycles.")
         print("-[stop <cycle index>] : stop cycle.")
 
-
 class Cycle:
     def __init__(self, cycle_type, flat_ancor, text):
         self.cycle_type = cycle_type
@@ -339,7 +378,7 @@ def today_or_future(i):
 
 def dash_or_space(dash):
     if dash:
-        return("--")
+        return("┠─ ")
         dash = False
     else:
-        return("  ")
+        return("┃  ")
