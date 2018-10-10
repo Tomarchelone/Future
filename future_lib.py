@@ -1,3 +1,9 @@
+'''
+TODO
+
+Реализовать replace
+'''
+
 import sys
 import json
 import datetime
@@ -49,9 +55,6 @@ class Future:
 
                     self.print_cycle(cycle, j, base_len)
 
-        #if header_printed:
-        #    print("┣" + "━" * (base_len - 2) + "┫")
-
         self.print_foot(base_len)
 
     def add(self, args):
@@ -87,7 +90,7 @@ class Future:
 
         events[flat_date].append(text)
 
-        print("Event added to", flat_date)
+        print("Ok. Event added to", flat_date)
 
     def rm(self, args):
         if len(args) != 2:
@@ -97,7 +100,7 @@ class Future:
         events = self.events
 
         try:
-            index = int(args[1])
+            index = int(args[1]) - 1 # начинается с 1
             order = sorted(events.keys())
 
             if index < 0:
@@ -131,7 +134,6 @@ class Future:
             return()
 
         cycle_type = args[1]
-        #print(cycle_type)
         flat_ancor = args[2]
 
         try:
@@ -171,7 +173,7 @@ class Future:
                 return()
 
             self.window = window_size
-            print("Window size is now equal to", window_size)
+            print("Ok. Window size is now equal to", window_size)
 
         else:
             print_set_error()
@@ -189,25 +191,24 @@ class Future:
             self.events.pop(date)
 
     def print_cycles(self):
-        for (j, cycle) in enumarate(self.cycles):
-            print(cycle.text, " [", j, "] [", cycle.type, "]", sep='')
+        for (j, cycle) in enumerate(self.cycles):
+            print(cycle.text, " [", j, "] [", cycle.cycle_type, "]", sep='')
 
     def print_window(self):
         print("Window size is", self.window, "days")
 
     def print_future(self):
-        main_header = ("┏━━━━━━━━┫Future for the next "
+        main_header = ("┌────────┤Future for the next "
                        + str(self.window)
                        + " "
                        + day_s(self.window)
-                       + "┣━━━━━━━━┓")
+                       + "├────────┐")
 
         base_len = len(main_header)
-        # Это вычисление длины и положения крыши
         days_len = len(str(self.window)) + len(day_s(self.window))
-        roof = "         ┏" + "━" * (21 + days_len) + "┓"
-        bottom = "┃        ┗" + "━" * (21 + days_len) + "┛"
-        bottom += " " * (base_len - 1 - len(bottom)) + "┃"
+        roof = "         ┌" + "─" * (21 + days_len) + "┐"
+        bottom = "│        └" + "─" * (21 + days_len) + "┘"
+        bottom += " " * (base_len - 1 - len(bottom)) + "│"
 
         print(roof)
         print(main_header)
@@ -218,76 +219,103 @@ class Future:
     def print_header(self, i, date, base_len):
         date_str = datetime.strftime(date, "%Y-%m-%d")
         days_str = today_or_future(i)
-        main_info = (date_str
-                     + " │ "
+        main_info = (""
+                     + date_str
+                     + ",  "
                      + ind_to_day[date.weekday()]
-                     + " │ "
+                     + ",  "
                      + days_str
-                     + " │")
+                     + "")
 
-        roof = ("┣"
-                + "━" * (len(date_str) + 2)
-                + "┯"
-                + "━" * 5
-                + "┯"
-                + "━" * (len(days_str) + 2)
-                + "┯"
-                + "━" * (base_len - len(date_str) - len(days_str) - 14)
-                + "┫")
+        roof = ("├"
+                + "─" * (len(date_str))
+                + "─"
+                + "─" * 5
+                + "─"
+                + "─" * (len(days_str) + 4)
+                + "─"
+                + "─" * (base_len - len(date_str) - len(days_str) - 14)
+                + "┤")
 
-        main_string = ("┃"
-                       + " "
+
+        left_fill = (base_len - len(main_info) - 2) // 2
+        right_fill = base_len - 2 - left_fill - len(main_info)
+        main_string = ("│"
+                       + " " * left_fill
                        + main_info
-                       + " " * (base_len - len(main_info) - 3)
-                       + "┃")
+                       + " " * right_fill
+                       + "│")
 
-        foot = ("┠"
+        foot = ("├"
                 + "─" * (len(date_str) + 2)
                 + "┴"
                 + "─" * 5
                 + "┴"
                 + "─" * (len(days_str) + 2)
                 + "┘")
-        foot += " " * (base_len - len(foot) - 1) + "┃"
+        foot += " " * (base_len - len(foot) - 1) + "│"
 
         print(roof)
         print(main_string)
-        print(foot)
+        #print(foot)
+        print("│" + " " * (base_len - 2) + "│")
 
     def print_event(self, event, i, base_len):
-        formatted_event = event + " [" + str(i) + "]"
-        self.print_formatted_event(formatted_event, base_len)
-
-    def print_cycle(self, cycle, j, base_len):
-        formatted_cycle = cycle.text + " [" + cycle.cycle_type + "] [" + str(j) + "]"
-        self.print_formatted_event(formatted_cycle, base_len)
-
-    def print_formatted_event(self, formatted_event, base_len):
-        word_list = list(formatted_event.split())
+        word_list = list(event.split())
 
         current_line = ""
-        dash = True
+        index_printed = False
+        for word in word_list:
+            if (len(current_line) + len(word) + len(index_or_space(index_printed, i)) + 2
+                < base_len):
+                current_line += word + " "
+            else:
+                prefix = index_or_space(index_printed, i)
+                print(prefix
+                    + current_line
+                    + " " * (base_len - len(current_line) - len(prefix) - 1)
+                    + "│"
+                )
+                current_line = word + " "
+                index_printed = True
+
+        if current_line:
+            prefix = index_or_space(index_printed, i)
+            print(prefix
+                + current_line
+                + " " * (base_len - len(current_line) - len(prefix) - 1)
+                + "│"
+            )
+
+    def print_cycle(self, cycle, j, base_len):
+        text = cycle.text + " [" + str(j) + "]"
+        word_list = list(text.split())
+
+        current_line = ""
+        index_printed = False
         for word in word_list:
             if (len(current_line) + len(word) < base_len - 4):
                 current_line += word + " "
             else:
-                print(dash_or_space(dash)
+                prefix = cycle_or_space(index_printed, cycle.cycle_type, j)
+                print(prefix
                     + current_line
-                    + " " * (base_len - len(current_line) - 4)
-                    + "┃"
+                    + " " * (base_len - len(current_line) - len(prefix) - 1)
+                    + "│"
                 )
                 current_line = word + " "
-                dash = False
+                index_printed = True
 
         if current_line:
-            print(dash_or_space(dash)
+            prefix = cycle_or_space(index_printed, cycle.cycle_type, j)
+            print(prefix
                 + current_line
-                + " " * (base_len - len(current_line) - 4)
-                + "┃"
+                + " " * (base_len - len(current_line) - len(prefix) - 1)
+                + "│"
             )
 
     def print_foot(self, base_len):
-        print("┗" + "━" * (base_len - 2) + "┛" + "\n")
+        print("└" + "─" * (base_len - 2) + "┘" + "\n")
 
     def data(self):
         data = {}
@@ -295,8 +323,6 @@ class Future:
         data["events"] = self.events
         data["cycles"] = list(map(lambda x: x.recycle(), self.cycles))
         data["window"] = self.window
-
-        #print(data["cycles"])
 
         return(data)
 
@@ -376,9 +402,14 @@ def today_or_future(i):
     else:
         return(str(i) + " " + day_s(i))
 
-def dash_or_space(dash):
-    if dash:
-        return("┠─ ")
-        dash = False
+def index_or_space(index_printed, index):
+    if not index_printed:
+        return("│ [" + str(index + 1) + "] ")
     else:
-        return("┃  ")
+        return("│ ")
+
+def cycle_or_space(index_printed, cycle_type, index):
+    if not index_printed:
+        return("│(" + cycle_type + ") ")
+    else:
+        return("│ ")
